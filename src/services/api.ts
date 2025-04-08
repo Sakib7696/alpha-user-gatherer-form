@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-interface UserData {
+export interface UserData {
   name: string;
   email: string;
 }
@@ -14,6 +14,10 @@ export const submitUserData = async (userData: UserData): Promise<any> => {
     return response.data;
   } catch (error) {
     console.error('Error submitting user data:', error);
-    throw error;
+    // Modified to return a structured error response instead of throwing
+    return {
+      success: false,
+      message: 'Network error or server unavailable. Please try again later.'
+    };
   }
 };

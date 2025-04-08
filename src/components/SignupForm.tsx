@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { submitUserData } from "@/services/api";
+import { submitUserData, UserData } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
@@ -36,7 +36,25 @@ const SignupForm = ({ onSuccess }: SignupFormProps) => {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      await submitUserData(values);
+      // Ensure we pass complete and valid data that matches UserData interface
+      const userData: UserData = {
+        name: values.name,
+        email: values.email,
+      };
+      
+      const response = await submitUserData(userData);
+      
+      if (response && response.success === false) {
+        // Handle the error returned from our API service
+        toast({
+          title: "Connection Error",
+          description: response.message,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
       toast({
         title: "Success!",
         description: "Your information has been submitted.",
