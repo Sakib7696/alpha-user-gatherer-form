@@ -41,9 +41,11 @@ const SignupForm = ({ onSuccess }: SignupFormProps) => {
         name: values.name,
         email: values.email,
       };
-      
+
       const response = await submitUserData(userData);
-      
+      console.log('response' + response);
+
+
       if (response && response.success === false) {
         // Handle the error returned from our API service
         toast({
@@ -54,7 +56,7 @@ const SignupForm = ({ onSuccess }: SignupFormProps) => {
         setIsSubmitting(false);
         return;
       }
-      
+
       toast({
         title: "Success!",
         description: "Your information has been submitted.",
