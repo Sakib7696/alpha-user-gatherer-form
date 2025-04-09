@@ -4,20 +4,14 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-
-const SAMPLE_RESPONSES: Record<string, string> = {
-  "how many users filled the form": "Based on current data, 42 users have filled out the form.",
-  "how many users submitted": "So far, 38 users have successfully submitted the form.",
-  "how many users left in the middle": "Approximately 4 users started but didn't complete the form submission process.",
-  "form conversion rate": "The current form conversion rate is approximately 90.5%.",
-  "default": "I don't have specific information on that query. Please try asking about form submissions, completion rates, or user abandonment statistics."
-};
+import { useAnalytics, FormData } from "@/context/AnalyticsContext";
 
 const FormAnalyticsSearch = () => {
   const [query, setQuery] = useState("");
   const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { formData } = useAnalytics();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,20 +26,32 @@ const FormAnalyticsSearch = () => {
 
     setIsLoading(true);
     
-    // Simulate API call with timeout
+    // Process the data and generate an answer
     setTimeout(() => {
       const normalizedQuery = query.toLowerCase();
+      let responseText = "";
       
-      // Check if the query contains keywords related to form analytics
-      let responseText = SAMPLE_RESPONSES.default;
+      // Calculate analytics based on actual data
+      const totalFilled = formData.length;
+      const totalCompleted = formData.filter(data => data.completed).length;
+      const totalAbandoned = totalFilled - totalCompleted;
+      const conversionRate = totalFilled > 0 ? ((totalCompleted / totalFilled) * 100).toFixed(1) : "0";
       
-      Object.keys(SAMPLE_RESPONSES).forEach(key => {
-        if (normalizedQuery.includes(key) || 
-            key.includes(normalizedQuery) || 
-            normalizedQuery.includes(key.split(" ").slice(2).join(" "))) {
-          responseText = SAMPLE_RESPONSES[key];
-        }
-      });
+      if (normalizedQuery.includes("fill") || normalizedQuery.includes("start")) {
+        responseText = `Based on current data, ${totalFilled} users have filled out the form.`;
+      } else if (normalizedQuery.includes("submit") || normalizedQuery.includes("complete")) {
+        responseText = `So far, ${totalCompleted} users have successfully submitted the form.`;
+      } else if (normalizedQuery.includes("leave") || normalizedQuery.includes("abandon") || normalizedQuery.includes("middle")) {
+        responseText = `Approximately ${totalAbandoned} users started but didn't complete the form submission process.`;
+      } else if (normalizedQuery.includes("rate") || normalizedQuery.includes("conversion")) {
+        responseText = `The current form conversion rate is approximately ${conversionRate}%.`;
+      } else if (normalizedQuery.includes("list") || normalizedQuery.includes("show") || normalizedQuery.includes("who")) {
+        // If the user is asking for a list of users
+        const userList = formData.map(user => `${user.name} (${user.completed ? "completed" : "abandoned"})`).join(", ");
+        responseText = `Users who interacted with the form: ${userList}`;
+      } else {
+        responseText = "I don't have specific information on that query. Please try asking about form submissions, completion rates, or user abandonment statistics.";
+      }
       
       setAnswer(responseText);
       setIsLoading(false);

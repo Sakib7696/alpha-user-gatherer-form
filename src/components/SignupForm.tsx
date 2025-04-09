@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { submitUserData, UserData } from "@/services/api";
 import { Loader2 } from "lucide-react";
+import { useAnalytics } from "@/context/AnalyticsContext";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -24,6 +25,7 @@ interface SignupFormProps {
 const SignupForm = ({ onSuccess }: SignupFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { addFormData } = useAnalytics();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -36,6 +38,14 @@ const SignupForm = ({ onSuccess }: SignupFormProps) => {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
+      // Add to analytics context
+      addFormData({
+        name: values.name,
+        email: values.email,
+        timestamp: new Date().toISOString(),
+        completed: true,
+      });
+
       // Ensure we pass complete and valid data that matches UserData interface
       const userData: UserData = {
         name: values.name,
@@ -44,7 +54,6 @@ const SignupForm = ({ onSuccess }: SignupFormProps) => {
 
       const response = await submitUserData(userData);
       console.log('response' + response);
-
 
       if (response && response.success === false) {
         // Handle the error returned from our API service
