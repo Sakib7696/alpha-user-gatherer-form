@@ -2,6 +2,8 @@
 import { useState } from "react";
 import SignupForm from "../components/SignupForm";
 import ThankYouMessage from "../components/ThankYouMessage";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 const Index = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -23,6 +25,19 @@ const Index = () => {
             <p className="text-white/80">
               Be among the first to experience our new platform
             </p>
+            <div className="mt-4">
+              <a 
+                href="https://chat.openai.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex"
+              >
+                <Button variant="secondary" className="flex items-center gap-2">
+                  <span>Try ChatGPT</span>
+                  <ExternalLink size={16} />
+                </Button>
+              </a>
+            </div>
           </div>
           
           {!submitted ? (
