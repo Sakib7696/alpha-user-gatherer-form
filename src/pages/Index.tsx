@@ -2,6 +2,7 @@
 import { useState } from "react";
 import SignupForm from "../components/SignupForm";
 import ThankYouMessage from "../components/ThankYouMessage";
+import FormAnalyticsSearch from "../components/FormAnalyticsSearch";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
@@ -16,7 +17,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-blue via-brand-indigo to-brand-purple">
-      <div className="container min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="container min-h-screen flex flex-col items-center justify-center px-4 py-12">
         <div className="form-container w-full max-w-lg rounded-xl p-6 md:p-8 backdrop-blur-sm">
           <div className="mb-6 text-center">
             <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
@@ -46,6 +47,8 @@ const Index = () => {
             <ThankYouMessage name={userName} />
           )}
         </div>
+
+        <FormAnalyticsSearch />
       </div>
     </div>
   );
